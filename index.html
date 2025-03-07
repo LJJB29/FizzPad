@@ -34,7 +34,7 @@
             background-color: #8B0000; /* Dark Red */
             border-radius: 50%;
             opacity: 0;
-            animation: rise 5s ease-in infinite, scale 3s ease-in-out infinite;
+            animation: rise 3s ease-in, scale 1.5s ease-in-out infinite;
         }
 
         /* Bubble rising animation */
@@ -43,12 +43,9 @@
                 bottom: -50px;
                 opacity: 0;
             }
-            25% {
-                opacity: 0.6;
-            }
             50% {
+                opacity: 0.6;
                 bottom: 40vh;
-                opacity: 1;
             }
             100% {
                 bottom: 100vh;
@@ -190,19 +187,21 @@
 
             // Set random size and starting position for variety
             bubble.style.left = `${Math.random() * 100}vw`;
-            bubble.style.animationDuration = `${Math.random() * 3 + 4}s`; // Random duration between 4s to 7s
-            bubble.style.animationDelay = `${Math.random() * 3}s`; // Random delay
+            bubble.style.animationDuration = `3s`; // Fixed 3-second duration for the rise animation
+            bubble.style.animationDelay = `${Math.random() * 1}s`; // Random delay to stagger the bubbles
 
             document.getElementById('bubblesContainer').appendChild(bubble);
 
             // Remove the bubble after it finishes rising
             setTimeout(() => {
                 bubble.remove();
-            }, 7000); // Matches the animation duration
+            }, 3000); // Matches the animation duration
         }
 
-        // Create bubbles every 200ms
-        setInterval(createBubble, 200);
+        // Create bubbles immediately after page loads
+        window.onload = () => {
+            setInterval(createBubble, 200); // Create bubbles every 200ms
+        };
 
         function toggleSettings() {
             document.getElementById("settingsMenu").style.display = "block";
@@ -211,12 +210,6 @@
         function closeSettings() {
             document.getElementById("settingsMenu").style.display = "none";
         }
-
-        window.onload = () => {
-            if (navigator.getGamepads) {
-                updateGamepad();
-            }
-        };
     </script>
 </body>
 </html>
