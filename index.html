@@ -11,9 +11,9 @@
             align-items: center;
             height: 100vh;
             text-align: center;
-            background-color: #121212; /* Dark mode default */
+            background-color: #121212;
             color: #ffffff;
-            transition: background-color 0.3s, color 0.3s; /* Smooth transition for theme change */
+            transition: background-color 0.3s, color 0.3s;
         }
         h1 {
             font-size: 2rem;
@@ -36,6 +36,7 @@
             font-size: 1.2rem;
             color: #ffffff;
             position: relative;
+            overflow: hidden;
         }
         .joystick .indicator {
             width: 20px;
@@ -147,7 +148,14 @@
                 let leftY = gamepad.axes[1] * 40;
                 let rightX = gamepad.axes[2] * 40;
                 let rightY = gamepad.axes[3] * 40;
-                
+
+                // Clamp the joystick movement to the joystick container bounds
+                leftX = Math.max(-40, Math.min(40, leftX)); 
+                leftY = Math.max(-40, Math.min(40, leftY));
+                rightX = Math.max(-40, Math.min(40, rightX));
+                rightY = Math.max(-40, Math.min(40, rightY));
+
+                // Move the indicators based on the joystick values
                 leftJoystick.style.transform = `translate(${leftX}px, ${leftY}px)`;
                 rightJoystick.style.transform = `translate(${rightX}px, ${rightY}px)`;
             }
