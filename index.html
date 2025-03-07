@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FizzPad 🥤</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            background-color: #121212;
+            color: #ffffff;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        .controller-container {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            margin-top: 20px;
+        }
+        .joystick {
+            width: 100px;
+            height: 100px;
+            background: gray;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #ffffff;
+            position: relative;
+        }
+        .joystick .indicator {
+            width: 20px;
+            height: 20px;
+            background: red;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .controller {
+            display: grid;
+            grid-template-columns: repeat(4, 80px);
+            grid-template-rows: repeat(2, 80px);
+            gap: 10px;
+            justify-items: center;
+        }
+        .button {
+            width: 70px;
+            height: 70px;
+            background: gray;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: red;
+        }
+        .button.pressed {
+            background: red;
+            color: white;
+        }
+        .settings-menu {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        .settings-menu button {
+            margin-top: 10px;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 25px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 25px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: red;
+        }
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        .settings-button {
+            margin-top: 20px;
+            padding: 10px;
+            background: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+    <script>
+        function updateGamepad() {
+            let gamepads = navigator.getGamepads();
+            if (gamepads[0]) {
+                let gamepad = gamepads[0];
+                let buttons = document.querySelectorAll(".button");
+                
+                let mapping = [6, 4, 5, 7, 2, 3, 0, 1]; // LT, LB, RB, RT, X, Y, A, B
+                
+                mapping.forEach((index, i) => {
+                    if (buttons[i]) {
+                        buttons[i].classList.toggle("pressed", gamepad.buttons[index].pressed);
+                    }
+                });
+                
+                let leftJoystick = document.getElementById("leftJoystick").querySelector(".indicator");
+                let rightJoystick = document.getElementById("rightJoystick").querySelector(".indicator");
+                
+                let leftX = gamepad.axes[0] * 40;
+                let leftY = gamepad.axes[1] * 40;
+                let rightX = gamepad.axes[2] * 40;
+                let rightY = gamepad.axes[3] * 40;
+                
+                leftJoystick.style.transform = `translate(${leftX}px, ${leftY}px)`;
+                rightJoystick.style.transform = `translate(${rightX}px, ${rightY}px)`;
+            }
+            requestAnimationFrame(updateGamepad);
+        }
+        function toggleSettings() {
+            document.getElementById("settingsMenu").style.display = "block";
+        }
+        function closeSettings() {
+            document.getElementById("settingsMenu").style.display = "none";
+        }
+        window.onload = () => {
+            if (navigator.getGamepads) {
+                updateGamepad();
+            }
+        };
+    </script>
+</head>
+<body>
+    <h1>FizzPad 🥤</h1>
+    <button class="settings-button" onclick="toggleSettings()">Settings</button>
+    <div class="controller-container">
+        <div id="leftJoystick" class="joystick">
+            <div class="indicator"></div>
+        </div>
+        <div class="controller">
+            <div class="button">LT</div>
+            <div class="button">LB</div>
+            <div class="button">RB</div>
+            <div class="button">RT</div>
+            <div class="button">X</div>
+            <div class="button">Y</div>
+            <div class="button">A</div>
+            <div class="button">B</div>
+        </div>
+        <div id="rightJoystick" class="joystick">
+            <div class="indicator"></div>
+        </div>
+    </div>
+    <div id="settingsMenu" class="settings-menu">
+        <label class="toggle-switch">
+            <input type="checkbox">
+            <span class="slider"></span>
+        </label>
+        <p>Toggle Light Mode</p>
+        <button onclick="closeSettings()">Exit Settings</button>
+    </div>
+</body>
+</html>
