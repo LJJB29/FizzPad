@@ -155,6 +155,24 @@
             color: white; /* Light text on the button */
         }
 
+        .developer-mode-buttons {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .developer-mode-buttons button {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .developer-mode-buttons button:hover {
+            background-color: #555;
+        }
     </style>
     <script>
         function updateGamepad() {
@@ -217,6 +235,19 @@
             document.getElementById("changelogMenu").style.display = "none";
         }
 
+        function toggleDeveloperMode() {
+            const devButtons = document.querySelector('.developer-mode-buttons');
+            devButtons.style.display = devButtons.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function showLogs() {
+            console.log("Developer Mode Logs: This is a log message for testing.");
+        }
+
+        function reloadPage() {
+            location.reload();
+        }
+
         window.onload = () => {
             if (navigator.getGamepads) {
                 updateGamepad();
@@ -249,12 +280,18 @@
     <div id="settingsMenu" class="settings-menu">
         <button class="light-mode-button" onclick="toggleLightMode()">Switch to Light Mode</button>
         <button onclick="closeSettings()">Exit Settings</button>
+        <button onclick="toggleDeveloperMode()">Toggle Developer Mode</button>
+        <div class="developer-mode-buttons">
+            <button onclick="showLogs()">Show Logs</button>
+            <button onclick="reloadPage()">Reload Page</button>
+        </div>
     </div>
 
     <div id="changelogMenu" class="changelog-menu">
         <h2>Changelog</h2>
         <div class="changelog-list">
             <ul>
+                <li><strong>v1.3</strong>: Added developer mode toggle with buttons for logs and reloading the page.</li>
                 <li><strong>v1.2</strong>: Fixed changelog menu visibility and readability in light mode.</li>
                 <li><strong>v1.1</strong>: Added light mode toggle button.</li>
                 <li><strong>v1.0</strong>: Initial release with dark mode and controller support.</li>
