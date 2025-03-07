@@ -34,7 +34,7 @@
             background-color: #8B0000; /* Dark Red */
             border-radius: 50%;
             opacity: 0;
-            animation: rise 3s ease-in, scale 1.5s ease-in-out infinite;
+            animation: rise 6s ease-in, scale 1.5s ease-in-out infinite;
         }
 
         /* Bubble rising animation */
@@ -142,6 +142,18 @@
             cursor: pointer;
             border-radius: 5px;
         }
+
+        /* Screensaver overlay */
+        #screensaver {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
@@ -150,6 +162,9 @@
 
     <!-- Bubbles will appear here -->
     <div id="bubblesContainer"></div>
+
+    <!-- Screensaver overlay -->
+    <div id="screensaver"></div>
 
     <div class="controller-container">
         <div id="leftJoystick" class="joystick">
@@ -180,6 +195,9 @@
     </div>
 
     <script>
+        let inactivityTimer;
+        let bubbleInterval;
+
         // Function to add random bubbles
         function createBubble() {
             const bubble = document.createElement('div');
@@ -187,7 +205,7 @@
 
             // Set random size and starting position for variety
             bubble.style.left = `${Math.random() * 100}vw`;
-            bubble.style.animationDuration = `3s`; // Fixed 3-second duration for the rise animation
+            bubble.style.animationDuration = `6s`; // Reverted back to 6 seconds
             bubble.style.animationDelay = `${Math.random() * 1}s`; // Random delay to stagger the bubbles
 
             document.getElementById('bubblesContainer').appendChild(bubble);
@@ -195,12 +213,36 @@
             // Remove the bubble after it finishes rising
             setTimeout(() => {
                 bubble.remove();
-            }, 3000); // Matches the animation duration
+            }, 6000); // Matches the animation duration
         }
 
-        // Create bubbles immediately after page loads
+        // Function to show the screensaver (bubbles animation)
+        function showScreensaver() {
+            document.getElementById('screensaver').style.display = 'block';
+            bubbleInterval = setInterval(createBubble, 500); // Create bubbles every 500ms
+        }
+
+        // Function to hide the screensaver
+        function hideScreensaver() {
+            document.getElementById('screensaver').style.display = 'none';
+            document.getElementById('bubblesContainer').innerHTML = ''; // Remove all existing bubbles
+            clearInterval(bubbleInterval); // Stop the bubble creation interval
+        }
+
+        // Reset inactivity timer when there's activity
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            hideScreensaver();
+            inactivityTimer = setTimeout(showScreensaver, 240000); // 4 minutes in ms
+        }
+
+        // Add event listeners for user activity
         window.onload = () => {
-            setInterval(createBubble, 200); // Create bubbles every 200ms
+            resetInactivityTimer(); // Start the timer immediately
+
+            // Reset timer on mousemove or keypress
+            document.addEventListener('mousemove', resetInactivityTimer);
+            document.addEventListener('keypress', resetInactivityTimer);
         };
 
         function toggleSettings() {
