@@ -240,9 +240,10 @@
         window.onload = () => {
             resetInactivityTimer(); // Start the timer immediately
 
-            // Reset timer on mousemove or keypress
+            // Reset timer on mousemove, keypress, or mouse click
             document.addEventListener('mousemove', resetInactivityTimer);
             document.addEventListener('keypress', resetInactivityTimer);
+            document.addEventListener('click', resetInactivityTimer);  // Added click listener
         };
 
         function toggleSettings() {
