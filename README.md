@@ -1,2 +1,2 @@
 # FizzPad
-An Entirely HTTP based Controller Tester
+An Entirely HTTP and java based Controller Tester
