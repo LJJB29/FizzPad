@@ -11,8 +11,9 @@
             align-items: center;
             height: 100vh;
             text-align: center;
-            background-color: #121212;
+            background-color: #121212; /* Dark mode default */
             color: #ffffff;
+            transition: background-color 0.3s, color 0.3s; /* Smooth transition for theme change */
         }
         h1 {
             font-size: 2rem;
@@ -162,16 +163,32 @@
             }
             requestAnimationFrame(updateGamepad);
         }
+
         function toggleSettings() {
             document.getElementById("settingsMenu").style.display = "block";
         }
+
         function closeSettings() {
             document.getElementById("settingsMenu").style.display = "none";
         }
+
+        function toggleLightMode() {
+            const isChecked = document.querySelector('.toggle-switch input').checked;
+            if (isChecked) {
+                document.body.style.backgroundColor = '#ffffff';  // Light mode background
+                document.body.style.color = '#121212';  // Dark text color for contrast
+            } else {
+                document.body.style.backgroundColor = '#121212';  // Dark mode background
+                document.body.style.color = '#ffffff';  // Light text color for contrast
+            }
+        }
+
         window.onload = () => {
             if (navigator.getGamepads) {
                 updateGamepad();
             }
+            // Set the event listener for the toggle switch
+            document.querySelector('.toggle-switch input').addEventListener('change', toggleLightMode);
         };
     </script>
 </head>
