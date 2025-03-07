@@ -173,8 +173,26 @@
         .developer-mode-buttons button:hover {
             background-color: #555;
         }
+
+        /* Log container for developer mode */
+        .log-container {
+            position: fixed;
+            left: 10px;
+            top: 10px;
+            width: 250px;
+            max-height: 90%;
+            overflow-y: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            display: none; /* Hidden by default */
+        }
     </style>
     <script>
+        let logContainer;
+
         function updateGamepad() {
             let gamepads = navigator.getGamepads();
             if (gamepads[0]) {
@@ -241,11 +259,23 @@
         }
 
         function showLogs() {
-            console.log("Developer Mode Logs: This is a log message for testing.");
+            if (!logContainer) {
+                logContainer = document.createElement("div");
+                logContainer.classList.add("log-container");
+                document.body.appendChild(logContainer);
+            }
+            logContainer.style.display = logContainer.style.display === 'none' ? 'block' : 'none';
         }
 
-        function reloadPage() {
-            location.reload();
+        function logInput(input) {
+            if (!logContainer) {
+                logContainer = document.createElement("div");
+                logContainer.classList.add("log-container");
+                document.body.appendChild(logContainer);
+            }
+            const logEntry = document.createElement("div");
+            logEntry.textContent = input;
+            logContainer.appendChild(logEntry);
         }
 
         window.onload = () => {
@@ -264,26 +294,28 @@
             <div class="indicator"></div>
         </div>
         <div class="controller">
-            <div class="button">LT</div>
-            <div class="button">LB</div>
-            <div class="button">RB</div>
-            <div class="button">RT</div>
-            <div class="button">X</div>
-            <div class="button">Y</div>
-            <div class="button">A</div>
-            <div class="button">B</div>
+            <div class="button" onclick="logInput('LT Pressed')">LT</div>
+            <div class="button" onclick="logInput('LB Pressed')">LB</div>
+            <div class="button" onclick="logInput('RB Pressed')">RB</div>
+            <div class="button" onclick="logInput('RT Pressed')">RT</div>
+            <div class="button" onclick="logInput('X Pressed')">X</div>
+            <div class="button" onclick="logInput('Y Pressed')">Y</div>
+            <div class="button" onclick="logInput('A Pressed')">A</div>
+            <div class="button" onclick="logInput('B Pressed')">B</div>
         </div>
         <div id="rightJoystick" class="joystick">
             <div class="indicator"></div>
         </div>
     </div>
+
     <div id="settingsMenu" class="settings-menu">
         <button class="light-mode-button" onclick="toggleLightMode()">Switch to Light Mode</button>
+        <button onclick="toggleDeveloperMode()">Developer Mode</button>
         <button onclick="closeSettings()">Exit Settings</button>
-        <button onclick="toggleDeveloperMode()">Toggle Developer Mode</button>
+
         <div class="developer-mode-buttons">
             <button onclick="showLogs()">Show Logs</button>
-            <button onclick="reloadPage()">Reload Page</button>
+            <button onclick="location.reload()">Reload Page</button>
         </div>
     </div>
 
@@ -291,8 +323,8 @@
         <h2>Changelog</h2>
         <div class="changelog-list">
             <ul>
-                <li><strong>v1.3</strong>: Added developer mode toggle with buttons for logs and reloading the page.</li>
-                <li><strong>v1.2</strong>: Fixed changelog menu visibility and readability in light mode.</li>
+                <li><strong>v1.3</strong>: Added developer mode with log display functionality.</li>
+                <li><strong>v1.2</strong>: Fixed light mode styles for changelog and settings menu.</li>
                 <li><strong>v1.1</strong>: Added light mode toggle button.</li>
                 <li><strong>v1.0</strong>: Initial release with dark mode and controller support.</li>
             </ul>
