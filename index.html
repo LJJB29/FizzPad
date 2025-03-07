@@ -69,7 +69,7 @@
             background: red;
             color: white;
         }
-        .settings-menu {
+        .settings-menu, .changelog-menu {
             display: none;
             position: fixed;
             top: 50%;
@@ -80,14 +80,17 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
             text-align: center;
+            max-width: 400px;
+            overflow-y: auto;
+            height: 60%;
         }
-        .settings-menu button {
+        .settings-menu button, .changelog-menu button {
             margin-top: 10px;
             padding: 10px;
             border: none;
             cursor: pointer;
         }
-        .settings-button {
+        .settings-button, .changelog-button {
             margin-top: 20px;
             padding: 10px;
             background: red;
@@ -109,6 +112,17 @@
         }
         .light-mode-button:hover {
             background-color: #888;
+        }
+        .changelog-list {
+            text-align: left;
+            margin-top: 10px;
+        }
+        .changelog-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .changelog-list li {
+            margin: 5px 0;
         }
     </style>
     <script>
@@ -161,6 +175,14 @@
             }
         }
 
+        function toggleChangelog() {
+            document.getElementById("changelogMenu").style.display = "block";
+        }
+
+        function closeChangelog() {
+            document.getElementById("changelogMenu").style.display = "none";
+        }
+
         window.onload = () => {
             if (navigator.getGamepads) {
                 updateGamepad();
@@ -171,6 +193,7 @@
 <body>
     <h1>FizzPad 🥤</h1>
     <button class="settings-button" onclick="toggleSettings()">Settings</button>
+    <button class="changelog-button" onclick="toggleChangelog()">Changelog</button>
     <div class="controller-container">
         <div id="leftJoystick" class="joystick">
             <div class="indicator"></div>
@@ -192,6 +215,17 @@
     <div id="settingsMenu" class="settings-menu">
         <button class="light-mode-button" onclick="toggleLightMode()">Switch to Light Mode</button>
         <button onclick="closeSettings()">Exit Settings</button>
+    </div>
+
+    <div id="changelogMenu" class="changelog-menu">
+        <h2>Changelog</h2>
+        <div class="changelog-list">
+            <ul>
+                <li><strong>v1.1</strong>: Added light mode toggle button.</li>
+                <li><strong>v1.0</strong>: Initial release with dark mode and controller support.</li>
+            </ul>
+        </div>
+        <button onclick="closeChangelog()">Close Changelog</button>
     </div>
 </body>
 </html>
