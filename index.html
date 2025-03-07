@@ -124,6 +124,27 @@
         .changelog-list li {
             margin: 5px 0;
         }
+
+        /* Adjust styles for light mode */
+        body.light-mode {
+            background-color: #ffffff;
+            color: #121212;
+        }
+
+        .changelog-menu.light-mode {
+            background: #f4f4f4; /* Lighter background in light mode */
+            color: #121212; /* Dark text for contrast */
+        }
+
+        .changelog-menu.light-mode ul {
+            color: #121212; /* Dark text for changelog list items */
+        }
+
+        .changelog-menu.light-mode button {
+            background-color: #121212; /* Dark button background in light mode */
+            color: white; /* Light button text */
+        }
+
     </style>
     <script>
         function updateGamepad() {
@@ -164,13 +185,16 @@
 
         function toggleLightMode() {
             const body = document.body;
-            if (body.style.backgroundColor === "rgb(18, 18, 18)") {  // Dark mode
-                body.style.backgroundColor = "#ffffff";  // Light mode background
-                body.style.color = "#121212";  // Dark text color for contrast
+            const changelogMenu = document.getElementById("changelogMenu");
+            const settingsMenu = document.getElementById("settingsMenu");
+            
+            body.classList.toggle('light-mode');
+            changelogMenu.classList.toggle('light-mode');
+            settingsMenu.classList.toggle('light-mode');
+            
+            if (body.classList.contains('light-mode')) {
                 document.querySelector('.light-mode-button').textContent = "Switch to Dark Mode";  // Update button text
             } else {
-                body.style.backgroundColor = "#121212";  // Dark mode background
-                body.style.color = "#ffffff";  // Light text color for contrast
                 document.querySelector('.light-mode-button').textContent = "Switch to Light Mode";  // Update button text
             }
         }
@@ -221,6 +245,7 @@
         <h2>Changelog</h2>
         <div class="changelog-list">
             <ul>
+                <li><strong>v1.2</strong>: Fixed changelog menu visibility and readability in light mode.</li>
                 <li><strong>v1.1</strong>: Added light mode toggle button.</li>
                 <li><strong>v1.0</strong>: Initial release with dark mode and controller support.</li>
             </ul>
