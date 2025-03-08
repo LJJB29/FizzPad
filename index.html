@@ -23,7 +23,7 @@
             margin-bottom: 10px;
         }
         .controller-container {
-            display: flex;
+            display: none;
             align-items: center;
             gap: 50px;
             margin-top: 20px;
@@ -74,36 +74,44 @@
         }
     </style>
     <script>
-        function requestNotificationPermission() {
-            if ("Notification" in window) {
+        document.addEventListener("click", function() {
+            document.querySelector(".controller-container").style.display = "flex";
+        }, { once: true });
+
+        function sendLandscapeNotification() {
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification("For best experience, rotate to landscape mode.");
+            } else if ("Notification" in window) {
                 Notification.requestPermission().then(permission => {
                     if (permission === "granted") {
-                        showLandscapeNotification();
+                        new Notification("For best experience, rotate to landscape mode.");
                     }
                 });
             }
         }
-
-        function showLandscapeNotification() {
-            if ("Notification" in window && Notification.permission === "granted") {
-                new Notification("🔄 Rotate to Landscape", {
-                    body: "FizzPad works best in landscape mode!",
-                    icon: "icon.png"
-                });
-            }
-        }
-
-        window.onload = () => {
-            if (Notification.permission === "default") {
-                document.addEventListener("click", requestNotificationPermission, { once: true });
-            } else if (Notification.permission === "granted") {
-                showLandscapeNotification();
-            }
-        };
+        
+        document.addEventListener("DOMContentLoaded", sendLandscapeNotification);
     </script>
 </head>
 <body>
     <h1>FizzPad 🥤</h1>
-    <p>Tap anywhere to enable notifications.</p>
+    <div class="controller-container">
+        <div id="leftJoystick" class="joystick">
+            <div class="indicator"></div>
+        </div>
+        <div class="controller">
+            <div class="button">LT</div>
+            <div class="button">LB</div>
+            <div class="button">RB</div>
+            <div class="button">RT</div>
+            <div class="button">X</div>
+            <div class="button">Y</div>
+            <div class="button">A</div>
+            <div class="button">B</div>
+        </div>
+        <div id="rightJoystick" class="joystick">
+            <div class="indicator"></div>
+        </div>
+    </div>
 </body>
 </html>
