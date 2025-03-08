@@ -2,9 +2,9 @@
 <html>
 <head>
     <title>FizzPad 🥤</title>
+    <link rel="apple-touch-icon" href="icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -14,16 +14,9 @@
             align-items: center;
             height: 100vh;
             text-align: center;
-            background-color: #121212; /* Dark mode default */
+            background-color: #121212;
             color: #ffffff;
-            transition: background-color 0.3s, color 0.3s; /* Smooth transition for theme change */
-            margin: 0;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
+            transition: background-color 0.3s, color 0.3s;
         }
         h1 {
             font-size: 2rem;
@@ -79,57 +72,38 @@
             background: red;
             color: white;
         }
-        .settings-menu, .changelog-menu {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #222;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            max-width: 400px;
-            overflow-y: auto;
-            height: 60%;
-        }
-        .settings-menu button, .changelog-menu button {
-            margin-top: 10px;
-            padding: 10px;
-            border: none;
-            cursor: pointer;
-        }
     </style>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            if (window.navigator.standalone) {
-                document.documentElement.requestFullscreen?.();
+        function requestNotificationPermission() {
+            if ("Notification" in window) {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        showLandscapeNotification();
+                    }
+                });
             }
-        });
+        }
+
+        function showLandscapeNotification() {
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification("🔄 Rotate to Landscape", {
+                    body: "FizzPad works best in landscape mode!",
+                    icon: "icon.png"
+                });
+            }
+        }
+
+        window.onload = () => {
+            if (Notification.permission === "default") {
+                document.addEventListener("click", requestNotificationPermission, { once: true });
+            } else if (Notification.permission === "granted") {
+                showLandscapeNotification();
+            }
+        };
     </script>
 </head>
 <body>
     <h1>FizzPad 🥤</h1>
-    <button class="settings-button" onclick="toggleSettings()">Settings</button>
-    <button class="changelog-button" onclick="toggleChangelog()">Changelog</button>
-    <div class="controller-container">
-        <div id="leftJoystick" class="joystick">
-            <div class="indicator"></div>
-        </div>
-        <div class="controller">
-            <div class="button" onclick="logInput('LT Pressed')">LT</div>
-            <div class="button" onclick="logInput('LB Pressed')">LB</div>
-            <div class="button" onclick="logInput('RB Pressed')">RB</div>
-            <div class="button" onclick="logInput('RT Pressed')">RT</div>
-            <div class="button" onclick="logInput('X Pressed')">X</div>
-            <div class="button" onclick="logInput('Y Pressed')">Y</div>
-            <div class="button" onclick="logInput('A Pressed')">A</div>
-            <div class="button" onclick="logInput('B Pressed')">B</div>
-        </div>
-        <div id="rightJoystick" class="joystick">
-            <div class="indicator"></div>
-        </div>
-    </div>
+    <p>Tap anywhere to enable notifications.</p>
 </body>
 </html>
