@@ -2,9 +2,6 @@
 <html>
 <head>
     <title>FizzPad 🥤</title>
-    <link rel="apple-touch-icon" href="icon.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -14,32 +11,325 @@
             align-items: center;
             height: 100vh;
             text-align: center;
-            background-color: #121212;
+            background-color: #121212; /* Dark mode default */
             color: #ffffff;
-            transition: background-color 0.3s, color 0.3s;
+            transition: background-color 0.3s, color 0.3s; /* Smooth transition for theme change */
         }
         h1 {
             font-size: 2rem;
             margin-bottom: 10px;
         }
+        .controller-container {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            margin-top: 20px;
+        }
+        .joystick {
+            width: 100px;
+            height: 100px;
+            background: gray;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #ffffff;
+            position: relative;
+        }
+        .joystick .indicator {
+            width: 20px;
+            height: 20px;
+            background: red;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .controller {
+            display: grid;
+            grid-template-columns: repeat(4, 80px);
+            grid-template-rows: repeat(2, 80px);
+            gap: 10px;
+            justify-items: center;
+        }
+        .button {
+            width: 70px;
+            height: 70px;
+            background: gray;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: red;
+        }
+        .button.pressed {
+            background: red;
+            color: white;
+        }
+        .settings-menu, .changelog-menu {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            max-width: 400px;
+            overflow-y: auto;
+            height: 60%;
+        }
+        .settings-menu button, .changelog-menu button {
+            margin-top: 10px;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+        .settings-button, .changelog-button {
+            margin-top: 20px;
+            padding: 10px;
+            background: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .light-mode-button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #555;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        .light-mode-button:hover {
+            background-color: #888;
+        }
+        .changelog-list {
+            text-align: left;
+            margin-top: 10px;
+        }
+        .changelog-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .changelog-list li {
+            margin: 5px 0;
+        }
+
+        /* Adjust styles for light mode */
+        body.light-mode {
+            background-color: #ffffff;
+            color: #121212;
+        }
+
+        .changelog-menu.light-mode {
+            background: #f4f4f4; /* Lighter background in light mode */
+            color: #121212; /* Dark text for contrast */
+        }
+
+        .changelog-menu.light-mode ul {
+            color: #121212; /* Dark text for changelog list items */
+        }
+
+        .changelog-menu.light-mode button {
+            background-color: #121212; /* Dark button background in light mode */
+            color: white; /* Light button text */
+        }
+
+        .settings-menu.light-mode {
+            background: #f4f4f4; /* Light background in light mode */
+            color: #121212; /* Dark text color for readability */
+        }
+
+        .settings-menu.light-mode button {
+            background-color: #121212; /* Dark button background in light mode */
+            color: white; /* Light text on the button */
+        }
+
+        .developer-mode-buttons {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .developer-mode-buttons button {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .developer-mode-buttons button:hover {
+            background-color: #555;
+        }
+
+        /* Log container for developer mode */
+        .log-container {
+            position: fixed;
+            left: 10px;
+            top: 10px;
+            width: 250px;
+            max-height: 90%;
+            overflow-y: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            display: none; /* Hidden by default */
+        }
     </style>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            if (window.matchMedia("(display-mode: standalone)").matches) {
-                setTimeout(() => {
-                    if (window.Notification && Notification.permission !== "granted") {
-                        Notification.requestPermission().then(permission => {
-                            if (permission === "granted") {
-                                new Notification("For best experience, use landscape mode.");
-                            }
-                        });
+        let logContainer;
+
+        function updateGamepad() {
+            let gamepads = navigator.getGamepads();
+            if (gamepads[0]) {
+                let gamepad = gamepads[0];
+                let buttons = document.querySelectorAll(".button");
+                
+                let mapping = [6, 4, 5, 7, 2, 3, 0, 1]; // LT, LB, RB, RT, X, Y, A, B
+                
+                mapping.forEach((index, i) => {
+                    if (buttons[i]) {
+                        buttons[i].classList.toggle("pressed", gamepad.buttons[index].pressed);
                     }
-                }, 1000);
+                });
+                
+                let leftJoystick = document.getElementById("leftJoystick").querySelector(".indicator");
+                let rightJoystick = document.getElementById("rightJoystick").querySelector(".indicator");
+                
+                let leftX = gamepad.axes[0] * 40;
+                let leftY = gamepad.axes[1] * 40;
+                let rightX = gamepad.axes[2] * 40;
+                let rightY = gamepad.axes[3] * 40;
+                
+                leftJoystick.style.transform = `translate(${leftX}px, ${leftY}px)`;
+                rightJoystick.style.transform = `translate(${rightX}px, ${rightY}px)`;
             }
-        });
+            requestAnimationFrame(updateGamepad);
+        }
+
+        function toggleSettings() {
+            document.getElementById("settingsMenu").style.display = "block";
+        }
+
+        function closeSettings() {
+            document.getElementById("settingsMenu").style.display = "none";
+        }
+
+        function toggleLightMode() {
+            const body = document.body;
+            const changelogMenu = document.getElementById("changelogMenu");
+            const settingsMenu = document.getElementById("settingsMenu");
+            
+            body.classList.toggle('light-mode');
+            changelogMenu.classList.toggle('light-mode');
+            settingsMenu.classList.toggle('light-mode');
+            
+            if (body.classList.contains('light-mode')) {
+                document.querySelector('.light-mode-button').textContent = "Switch to Dark Mode";  // Update button text
+            } else {
+                document.querySelector('.light-mode-button').textContent = "Switch to Light Mode";  // Update button text
+            }
+        }
+
+        function toggleChangelog() {
+            document.getElementById("changelogMenu").style.display = "block";
+        }
+
+        function closeChangelog() {
+            document.getElementById("changelogMenu").style.display = "none";
+        }
+
+        function toggleDeveloperMode() {
+            const devButtons = document.querySelector('.developer-mode-buttons');
+            devButtons.style.display = devButtons.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function showLogs() {
+            if (!logContainer) {
+                logContainer = document.createElement("div");
+                logContainer.classList.add("log-container");
+                document.body.appendChild(logContainer);
+            }
+            logContainer.style.display = logContainer.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function logInput(input) {
+            if (!logContainer) {
+                logContainer = document.createElement("div");
+                logContainer.classList.add("log-container");
+                document.body.appendChild(logContainer);
+            }
+            const logEntry = document.createElement("div");
+            logEntry.textContent = input;
+            logContainer.appendChild(logEntry);
+        }
+
+        window.onload = () => {
+            if (navigator.getGamepads) {
+                updateGamepad();
+            }
+        };
     </script>
 </head>
 <body>
     <h1>FizzPad 🥤</h1>
+    <button class="settings-button" onclick="toggleSettings()">Settings</button>
+    <button class="changelog-button" onclick="toggleChangelog()">Changelog</button>
+    <div class="controller-container">
+        <div id="leftJoystick" class="joystick">
+            <div class="indicator"></div>
+        </div>
+        <div class="controller">
+            <div class="button" onclick="logInput('LT Pressed')">LT</div>
+            <div class="button" onclick="logInput('LB Pressed')">LB</div>
+            <div class="button" onclick="logInput('RB Pressed')">RB</div>
+            <div class="button" onclick="logInput('RT Pressed')">RT</div>
+            <div class="button" onclick="logInput('X Pressed')">X</div>
+            <div class="button" onclick="logInput('Y Pressed')">Y</div>
+            <div class="button" onclick="logInput('A Pressed')">A</div>
+            <div class="button" onclick="logInput('B Pressed')">B</div>
+        </div>
+        <div id="rightJoystick" class="joystick">
+            <div class="indicator"></div>
+        </div>
+    </div>
+
+    <div id="settingsMenu" class="settings-menu">
+        <button class="light-mode-button" onclick="toggleLightMode()">Switch to Light Mode</button>
+        <button onclick="toggleDeveloperMode()">Developer Mode</button>
+        <button onclick="closeSettings()">Exit Settings</button>
+
+        <div class="developer-mode-buttons">
+            <button onclick="showLogs()">Show Logs</button>
+            <button onclick="location.reload()">Reload Page</button>
+        </div>
+    </div>
+
+    <div id="changelogMenu" class="changelog-menu">
+        <h2>Changelog</h2>
+        <div class="changelog-list">
+            <ul>
+                <li><strong>v1.3</strong>: Added developer mode with log display functionality.</li>
+                <li><strong>v1.2</strong>: Fixed light mode styles for changelog and settings menu.</li>
+                <li><strong>v1.1</strong>: Added light mode toggle button.</li>
+                <li><strong>v1.0</strong>: Initial release with dark mode and controller support.</li>
+            </ul>
+        </div>
+        <button onclick="closeChangelog()">Close Changelog</button>
+    </div>
 </body>
 </html>
