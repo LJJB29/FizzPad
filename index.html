@@ -16,102 +16,32 @@
             text-align: center;
             background-color: #121212;
             color: #ffffff;
-            transition: background-color 0.3s, color 0.3s;
         }
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-        .controller-container {
+        .hidden {
             display: none;
-            align-items: center;
-            gap: 50px;
-            margin-top: 20px;
-        }
-        .joystick {
-            width: 100px;
-            height: 100px;
-            background: gray;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: #ffffff;
-            position: relative;
-        }
-        .joystick .indicator {
-            width: 20px;
-            height: 20px;
-            background: red;
-            border-radius: 50%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        .controller {
-            display: grid;
-            grid-template-columns: repeat(4, 80px);
-            grid-template-rows: repeat(2, 80px);
-            gap: 10px;
-            justify-items: center;
-        }
-        .button {
-            width: 70px;
-            height: 70px;
-            background: gray;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: red;
-        }
-        .button.pressed {
-            background: red;
-            color: white;
         }
     </style>
     <script>
-        document.addEventListener("click", function() {
-            document.querySelector(".controller-container").style.display = "flex";
-        }, { once: true });
-
-        function sendLandscapeNotification() {
-            if ("Notification" in window && Notification.permission === "granted") {
-                new Notification("For best experience, rotate to landscape mode.");
-            } else if ("Notification" in window) {
+        function requestNotificationPermission() {
+            if (!localStorage.getItem("notificationsEnabled")) {
                 Notification.requestPermission().then(permission => {
                     if (permission === "granted") {
-                        new Notification("For best experience, rotate to landscape mode.");
+                        localStorage.setItem("notificationsEnabled", "true");
+                        new Notification("FizzPad works best in landscape mode!");
                     }
                 });
             }
         }
         
-        document.addEventListener("DOMContentLoaded", sendLandscapeNotification);
+        document.addEventListener("click", function enableControllerDisplay() {
+            document.querySelector("#tapMessage").classList.add("hidden");
+            requestNotificationPermission();
+            document.removeEventListener("click", enableControllerDisplay);
+        });
     </script>
 </head>
 <body>
     <h1>FizzPad 🥤</h1>
-    <div class="controller-container">
-        <div id="leftJoystick" class="joystick">
-            <div class="indicator"></div>
-        </div>
-        <div class="controller">
-            <div class="button">LT</div>
-            <div class="button">LB</div>
-            <div class="button">RB</div>
-            <div class="button">RT</div>
-            <div class="button">X</div>
-            <div class="button">Y</div>
-            <div class="button">A</div>
-            <div class="button">B</div>
-        </div>
-        <div id="rightJoystick" class="joystick">
-            <div class="indicator"></div>
-        </div>
-    </div>
+    <p id="tapMessage">Tap to enable notifications</p>
 </body>
 </html>
