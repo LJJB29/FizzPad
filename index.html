@@ -16,32 +16,30 @@
             text-align: center;
             background-color: #121212;
             color: #ffffff;
+            transition: background-color 0.3s, color 0.3s;
         }
-        .hidden {
-            display: none;
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
         }
     </style>
     <script>
-        function requestNotificationPermission() {
-            if (!localStorage.getItem("notificationsEnabled")) {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        localStorage.setItem("notificationsEnabled", "true");
-                        new Notification("FizzPad works best in landscape mode!");
+        document.addEventListener("DOMContentLoaded", function () {
+            if (window.matchMedia("(display-mode: standalone)").matches) {
+                setTimeout(() => {
+                    if (window.Notification && Notification.permission !== "granted") {
+                        Notification.requestPermission().then(permission => {
+                            if (permission === "granted") {
+                                new Notification("For best experience, use landscape mode.");
+                            }
+                        });
                     }
-                });
+                }, 1000);
             }
-        }
-        
-        document.addEventListener("click", function enableControllerDisplay() {
-            document.querySelector("#tapMessage").classList.add("hidden");
-            requestNotificationPermission();
-            document.removeEventListener("click", enableControllerDisplay);
         });
     </script>
 </head>
 <body>
     <h1>FizzPad 🥤</h1>
-    <p id="tapMessage">Tap to enable notifications</p>
 </body>
 </html>
